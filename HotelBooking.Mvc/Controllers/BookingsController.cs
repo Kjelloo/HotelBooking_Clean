@@ -29,7 +29,7 @@ namespace HotelBooking.Mvc.Controllers
         public IActionResult Index(int? id)
         {
             bookingViewModel.YearToDisplay = (id == null) ? DateTime.Today.Year : id.Value;
-            return View(bookingViewModel);
+            return View((BookingViewModel)bookingViewModel);
         }
 
         // GET: Bookings/Details/5
