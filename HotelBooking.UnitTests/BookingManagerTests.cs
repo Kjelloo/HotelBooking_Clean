@@ -90,13 +90,16 @@ namespace HotelBooking.UnitTests
             Assert.Empty(bookingForReturnedRoomId);
         }
         
-        [Fact]
-        public void FindAvailableRoom_RoomAvailable_ReturnsRoomId()
+        [Theory]
+        [InlineData(1, 8)]
+        [InlineData(21, 25)]
+        public void FindAvailableRoom_RoomAvailable_ReturnsRoomId(int start, int end)
         {
             // Arrange
-            DateTime date = DateTime.Today.AddDays(1);
+            var startDateTime = DateTime.Today.AddDays(start);
+            var endDateTime = DateTime.Today.AddDays(end);
             // Act
-            int roomId = bookingManager.FindAvailableRoom(date, date);
+            int roomId = bookingManager.FindAvailableRoom(startDateTime, endDateTime);
             // Assert
             Assert.InRange<int>(roomId, 1, 3);
         }
@@ -111,20 +114,6 @@ namespace HotelBooking.UnitTests
             int roomId = bookingManager.FindAvailableRoom(start, end);
             // Assert
             Assert.Equal(-1, roomId);
-        }
-        
-        [Fact]
-        public void FindAvailableRoom_StartAndEndInTheFuture()
-        {
-            // Arrange
-            DateTime startDate = DateTime.Today.AddDays(21);
-            DateTime endDate = DateTime.Today.AddDays(25);
-
-            // Act
-            int roomId = bookingManager.FindAvailableRoom(startDate, endDate);
-
-            // Assert
-            Assert.NotEqual(-1, roomId);
         }
 
         // Test case 6: Start date before and during a fully booked period
