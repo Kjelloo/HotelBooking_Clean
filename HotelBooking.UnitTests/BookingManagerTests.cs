@@ -112,5 +112,64 @@ namespace HotelBooking.UnitTests
             // Assert
             Assert.Equal(-1, roomId);
         }
+        
+        [Fact]
+        public void FindAvailableRoom_StartAndEndInTheFuture()
+        {
+            // Arrange
+            DateTime startDate = DateTime.Today.AddDays(21);
+            DateTime endDate = DateTime.Today.AddDays(25);
+
+            // Act
+            int roomId = bookingManager.FindAvailableRoom(startDate, endDate);
+
+            // Assert
+            Assert.NotEqual(-1, roomId);
+        }
+
+        // Test case 6: Start date before and during a fully booked period
+        [Fact]
+        public void FindAvailableRoom_StartBeforeAndDuringBookedPeriod()
+        {
+            // Arrange
+            DateTime startDate = DateTime.Today.AddDays(7);
+            DateTime endDate = DateTime.Today.AddDays(14);
+
+            // Act
+            int roomId = bookingManager.FindAvailableRoom(startDate, endDate);
+
+            // Assert
+            Assert.Equal(-1, roomId);
+        }
+
+        // Test case 7: Start and end date during a fully booked period
+        [Fact]
+        public void FindAvailableRoom_StartAndEndDuringBookedPeriod()
+        {
+            // Arrange
+            DateTime startDate = DateTime.Today.AddDays(12);
+            DateTime endDate = DateTime.Today.AddDays(14);
+
+            // Act
+            int roomId = bookingManager.FindAvailableRoom(startDate, endDate);
+
+            // Assert
+            Assert.Equal(-1, roomId);
+        }
+
+        // Test case 8: Start date during and end date after a fully booked period.
+        [Fact]
+        public void FindAvailableRoom_StartDuringBookedPeriodAndEndAfter()
+        {
+            // Arrange
+            DateTime startDate = DateTime.Today.AddDays(14);
+            DateTime endDate = DateTime.Today.AddDays(20);
+
+            // Act
+            int roomId = bookingManager.FindAvailableRoom(startDate, endDate);
+
+            // Assert
+            Assert.Equal(-1, roomId);
+        }
     }
 }
