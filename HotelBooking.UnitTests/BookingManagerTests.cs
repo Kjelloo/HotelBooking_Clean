@@ -86,7 +86,7 @@ namespace HotelBooking.UnitTests
             int roomId = bookingManager.FindAvailableRoom(date, date);
 
             // Assert
-            var bookingForReturnedRoomId = bookingRepository.GetAll().Where(
+            var bookingForReturnedRoomId = fakeBookingRespository.Object.GetAll().Where(
                 b => b.RoomId == roomId
                 && b.StartDate <= date
                 && b.EndDate >= date
