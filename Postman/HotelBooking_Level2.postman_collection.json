@@ -1,0 +1,119 @@
+{
+	"info": {
+		"_postman_id": "b5028d0a-9757-4350-a831-ec7cdcc8cfff",
+		"name": "HotelBooking_Level2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24751614"
+	},
+	"item": [
+		{
+			"name": "All bookings",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Create Booking - Valid booking (5days in Summer)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');",
+							"",
+							"// Et ophold er 5 dage - Skal bookes tilfældigt imellem 1. maj til 27. august (118 dage)",
+							"var startOfMay = moment('2024-05-01');",
+							"var randomDaysToAdd = Math.floor(Math.random() * 118);",
+							"var startDate = startOfMay.add(randomDaysToAdd, 'days');",
+							"var endDate = moment(startDate).add(5, 'days');",
+							"",
+							"",
+							"pm.environment.set('startDate', startDate.format())",
+							"pm.environment.set('endDate',endDate.format())",
+							"",
+							"// Tilfældig customerId (mellem 1-2 som er tilgængelige pt.)",
+							"var rangeId = Math.floor(Math.random() * 2)+1",
+							"pm.environment.set('rangeId', rangeId)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {",
+							"  pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"startDate\": \"{{startDate}}\",\n    \"endDate\": \"{{endDate}}\",\n    \"customerId\": {{rangeId}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5001/bookings",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"bookings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete booking - id range from GET METHOD",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let ids = JSON.parse(pm.environment.get(\"bookingIDs\"));",
+							"console.log(ids.length);",
+							"let randomIndex = Math.floor(Math.random() * ids.length);",
+							"let idToDelete = ids[randomIndex];",
+							"",
+							"//pm.environment.set(\"idToDelete\", idToDelete);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5001/bookings/{{idToDelete}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"bookings",
+						"{{idToDelete}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
