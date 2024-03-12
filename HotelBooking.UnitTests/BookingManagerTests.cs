@@ -45,30 +45,50 @@ namespace HotelBooking.UnitTests
             bookingManager = new BookingManager(fakeBookingRespository.Object, fakeRoomRespository.Object);
         }
 
+        // Test case 1: Start date in the past
         [Fact]
         public void FindAvailableRoom_StartDateNotInTheFuture_ThrowsArgumentException()
         {
             // Arrange
-            DateTime date = DateTime.Today;
+            var start = DateTime.Today.AddDays(-2);
+            var end = DateTime.Today.AddDays(-1);
 
             // Act
-            Action act = () => bookingManager.FindAvailableRoom(date, date);
+            Action act = () => bookingManager.FindAvailableRoom(start, end);
 
             // Assert
             Assert.Throws<ArgumentException>(act);
         }
 
+        // Start date later than end date
         [Fact]
         public void FindAvailableRoom_RoomAvailable_RoomIdNotMinusOne()
         {
             // Arrange
-            DateTime date = DateTime.Today.AddDays(1);
+            var start = DateTime.Today.AddDays(2);
+            var end = DateTime.Today.AddDays(1);
             // Act
-            int roomId = bookingManager.FindAvailableRoom(date, date);
+            int roomId = bookingManager.FindAvailableRoom(start, end);
             // Assert
             Assert.NotEqual(-1, roomId);
         }
+        
+        // Test case 2: Start date in past end date in future
+        [Fact]
+        public void FindAvailableRoom_StartDateInThePastEndDateInTheFuture_ThrowsArgumentException()
+        {
+            // Arrange
+            var start = DateTime.Today.AddDays(-2);
+            var end = DateTime.Today.AddDays(2);
 
+            // Act
+            Action act = () => bookingManager.FindAvailableRoom(start, end);
+
+            // Assert
+            Assert.Throws<ArgumentException>(act);
+        }
+
+        
         [Fact]
         public void FindAvailableRoom_RoomAvailable_ReturnsAvailableRoom()
         {
@@ -90,6 +110,7 @@ namespace HotelBooking.UnitTests
             Assert.Empty(bookingForReturnedRoomId);
         }
         
+        // Test case 3 & 5: Booking in a valid timeslot
         [Theory]
         [InlineData(1, 8)]
         [InlineData(21, 25)]
@@ -104,6 +125,7 @@ namespace HotelBooking.UnitTests
             Assert.InRange<int>(roomId, 1, 3);
         }
         
+        // Test case 4: start date before and end date after a fully booked period
         [Fact]
         public void FindAvailableRoom_DuringFullyOccupiedPeriod_ReturnsMinusOne()
         {
