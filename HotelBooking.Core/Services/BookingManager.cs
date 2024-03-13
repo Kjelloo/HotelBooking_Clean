@@ -73,6 +73,5 @@ namespace HotelBooking.Core
             }
             return fullyOccupiedDates;
         }
-
     }
 }
