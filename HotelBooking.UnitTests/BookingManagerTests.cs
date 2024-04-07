@@ -46,12 +46,15 @@ namespace HotelBooking.UnitTests
         }
 
         // Test case 1: Start date in the past
-        [Fact]
-        public void FindAvailableRoom_StartDateNotInTheFuture_ThrowsArgumentException()
+        // Test case 2: Start date in past end date in future
+        [Theory]
+        [InlineData(-2, -1)]
+        [InlineData(-2, 2)]
+        public void FindAvailableRoom_StartDateNotInTheFuture_ThrowsArgumentException(int startDay, int endDay)
         {
             // Arrange
-            var start = DateTime.Today.AddDays(-2);
-            var end = DateTime.Today.AddDays(-1);
+            var start = DateTime.Today.AddDays(startDay);
+            var end = DateTime.Today.AddDays(endDay);
 
             // Act
             Action act = () => bookingManager.FindAvailableRoom(start, end);
@@ -62,7 +65,7 @@ namespace HotelBooking.UnitTests
 
         // Start date later than end date
         [Fact]
-        public void FindAvailableRoom_RoomAvailable_ThrowsArgumentExceptions()
+        public void FindAvailableRoom_EndBeforeStart_ThrowsArgumentExceptions()
         {
             // Arrange
             var start = DateTime.Today.AddDays(2);
@@ -73,22 +76,6 @@ namespace HotelBooking.UnitTests
             // Assert
             Assert.Throws<ArgumentException>(act);
         }
-        
-        // Test case 2: Start date in past end date in future
-        [Fact]
-        public void FindAvailableRoom_StartDateInThePastEndDateInTheFuture_ThrowsArgumentException()
-        {
-            // Arrange
-            var start = DateTime.Today.AddDays(-2);
-            var end = DateTime.Today.AddDays(2);
-
-            // Act
-            Action act = () => bookingManager.FindAvailableRoom(start, end);
-
-            // Assert
-            Assert.Throws<ArgumentException>(act);
-        }
-
         
         [Fact]
         public void FindAvailableRoom_RoomAvailable_ReturnsAvailableRoom()
@@ -127,61 +114,23 @@ namespace HotelBooking.UnitTests
         }
         
         // Test case 4: start date before and end date after a fully booked period
-        [Fact]
-        public void FindAvailableRoom_DuringFullyOccupiedPeriod_ReturnsMinusOne()
+        // Test case 6: Start date before and during a fully booked period
+        // Test case 7: Start and end date during a fully booked period
+        // Test case 8: Start date during and end date after a fully booked period.
+        [Theory]
+        [InlineData(7, 17)]
+        [InlineData(7, 14)]
+        [InlineData(12, 14)]
+        [InlineData(14, 20)]
+        public void FindAvailableRoom_DuringFullyOccupiedPeriod_ReturnsMinusOne(int startDay, int endDay)
         {
             // Arrange
-            DateTime start = DateTime.Today.AddDays(7);
-            DateTime end = DateTime.Today.AddDays(17);
+            var start = DateTime.Today.AddDays(startDay);
+            var end = DateTime.Today.AddDays(endDay);
             
             // Act
             int roomId = bookingManager.FindAvailableRoom(start, end);
             
-            // Assert
-            Assert.Equal(-1, roomId);
-        }
-
-        // Test case 6: Start date before and during a fully booked period
-        [Fact]
-        public void FindAvailableRoom_StartBeforeAndDuringBookedPeriod()
-        {
-            // Arrange
-            DateTime startDate = DateTime.Today.AddDays(7);
-            DateTime endDate = DateTime.Today.AddDays(14);
-
-            // Act
-            int roomId = bookingManager.FindAvailableRoom(startDate, endDate);
-
-            // Assert
-            Assert.Equal(-1, roomId);
-        }
-
-        // Test case 7: Start and end date during a fully booked period
-        [Fact]
-        public void FindAvailableRoom_StartAndEndDuringBookedPeriod()
-        {
-            // Arrange
-            DateTime startDate = DateTime.Today.AddDays(12);
-            DateTime endDate = DateTime.Today.AddDays(14);
-
-            // Act
-            int roomId = bookingManager.FindAvailableRoom(startDate, endDate);
-
-            // Assert
-            Assert.Equal(-1, roomId);
-        }
-
-        // Test case 8: Start date during and end date after a fully booked period.
-        [Fact]
-        public void FindAvailableRoom_StartDuringBookedPeriodAndEndAfter()
-        {
-            // Arrange
-            DateTime startDate = DateTime.Today.AddDays(14);
-            DateTime endDate = DateTime.Today.AddDays(20);
-
-            // Act
-            int roomId = bookingManager.FindAvailableRoom(startDate, endDate);
-
             // Assert
             Assert.Equal(-1, roomId);
         }
@@ -267,6 +216,7 @@ namespace HotelBooking.UnitTests
             {
                 new Room { Id = 1, Description = "A" }
             };
+            
             fakeRoomRepository.Setup(x => x.GetAll()).Returns(availableRooms);
             
             var existingBookings = new List<Booking> { 
