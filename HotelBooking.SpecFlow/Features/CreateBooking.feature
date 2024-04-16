@@ -33,18 +33,16 @@ Scenario Outline: Creating a booking within a valid booking period before and af
 	  | occupiedStartDate | occupiedEndDate | bookingStartDate  | bookingEndDate |
 	  | 10                | 20              | 19                | 25             |
 
+# This scenario covers test case 4-5	
 Scenario Outline: Start date before full period, end date in full period - booking denied
-	# This scenario covers test case 4-5		
-	Given the booking manager has the following occupied period:
-	  | Occupied Start Date            | Occupied End Date            |
-	  | <fullyOccupiedPeriodStartDate> | <fullyOccupiedPeriodEndDate> |
-	When the user attempts to create a booking with start date "<startDate>" and end date "<endDate>"
-	Then the booking should not be created
+	Given the fully occupied period from day <occupiedStartDate> to day <occupiedEndDate>
+	When the user attempts to create a booking with start date <bookingStartDate> and end date <bookingEndDate>
+	Then the booking should be rejected
 
 	Examples:
-	  | fullyOccupiedPeriodStartDate | fullyOccupiedPeriodEndDate | startDate         | endDate                         |
-	  | <todayPlusTenDays>           | <todayPlusTwentyDays>      | <beforeStartDate> | <firstDayInFullyOccupiedPeriod> |
-	  | <todayPlusTenDays>           | <todayPlusTwentyDays>      | <beforeStartDate> | <lastDayInFullyOccupiedPeriod>  |
+	  | occupiedStartDate | occupiedEndDate | bookingStartDate | bookingEndDate |
+	  | 10                | 20              | 5                | 10             |
+	  | 10                | 20              | 5                | 20             |
 
 # Test case 6-7
 Scenario Outline: Create a booking start in occupied period and end after the occupied period
@@ -59,20 +57,12 @@ Scenario Outline: Create a booking start in occupied period and end after the oc
     
 Scenario Outline: Start date in full period, end date in full period - booking denied
 	# This scenario covers test case 8-10
-	Given the booking manager has the following occupied period:
-	  | Occupied Start Date            | Occupied End Date            |
-	  | <fullyOccupiedPeriodStartDate> | <fullyOccupiedPeriodEndDate> |
-	When the user attempts to create a booking with start date "<startDate>" and end date "<endDate>"
-	Then the booking should not be created
+	Given the fully occupied period from day <occupiedStartDate> to day <occupiedEndDate>
+	When the user attempts to create a booking with start date <bookingStartDate> and end date <bookingEndDate>
+	Then the booking should be rejected
 
-	Examples:  # Example 1
-| fullyOccupiedPeriodStartDate | fullyOccupiedPeriodEndDate | startDate                            | endDate                             |
-| <todayPlusTenDays>           | <todayPlusTwentyDays>      | <firstDayInFullyOccupiedPeriod>     | <firstDayInFullyOccupiedPeriod>     |
-
-	Examples:  # Example 2
-| fullyOccupiedPeriodStartDate | fullyOccupiedPeriodEndDate | startDate                            | endDate                             |
-| <todayPlusTenDays>           | <todayPlusTwentyDays>      | <lastDayInFullyOccupiedPeriod>      | <lastDayInFullyOccupiedPeriod>      |
-
-	Examples:  # Example 3
-| fullyOccupiedPeriodStartDate | fullyOccupiedPeriodEndDate | startDate                            | endDate                             |
-| <todayPlusTenDays>           | <todayPlusTwentyDays>      | <firstDayInFullyOccupiedPeriod>     | <lastDayInFullyOccupiedPeriod>      |
+	Examples:
+		| occupiedStartDate | occupiedEndDate | bookingStartDate | bookingEndDate |
+		| 10           		| 20      		  | 10     			 | 10     		  |
+		| 10           		| 20      		  | 20      		 | 20      		  |
+		| 10           		| 20      		  | 10     			 | 20      		  |
